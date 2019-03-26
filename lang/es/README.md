@@ -19,7 +19,7 @@ customElements.define("my-tag", class extends Element{
 
 la clase Element entrega la siguiente interfaz para gestionar del web-component.
 
-```js
+```jsx
 class Element extends HTMLElement {
     /**
      * permite actualizar y despachar actualizaciones de los props asociados al web-component.
@@ -47,7 +47,9 @@ class Element extends HTMLElement {
      * @example el retorno de el componente siempre debe ser el tag host
      * <host/>
      */
-    static component = AnyComponentFromAtomico;
+    render(props){
+        return <host/>
+    }
 }
 ```
 
@@ -84,7 +86,7 @@ class MyTag extends Element {
         array: type({ type: "object" }),
         number: type({ type: "number" })
     };
-    static component(props) {
+    render(props) {
         console.log(props);
         return <host>Hello word</host>;
     }
