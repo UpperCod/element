@@ -1,7 +1,7 @@
 {
 	"name": "@atomico/element",
 	"description": "css-in-js, small and minimalist",
-	"version": "0.0.6",
+	"version": "0.1.0",
 	"main": "dist/atomico-element.js",
 	"module": "dist/atomico-element.mjs",
 	"umd:main": "dist/atomico-element.umd.js",
