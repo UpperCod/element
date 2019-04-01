@@ -1,95 +1,81 @@
 # @atomico/element
 
-`@atomico/element` allows the creation of web-components based on `@atomico/core`.
-
-```jsx
-import { Element } from "@atomico/element"
-import { h } from "@atomico/core"
-
-function MyTag(props){
-    return <host>Hello word</host>
-}
-
-customElements.define("my-tag", class extends Element{
-    static component = MyTag
-})
-```
-
-## Element
-
-Element class provides the following interface to manage the web-component.
-
-```jsx
-class Element extends HTMLElement {
-    /**
-     * it allows updating and dispatching updates of the props associated with the web-component.
-     * @param {string|object} property - name of the index or indices to be defined within this.props
-     * @param {value} [value] - if it is property string, value allows to define the state of the index.
-     */
-    set(property, value) {}
-
-    /**
-     * Defines the observable attributes of the web-component, each time one of these attributes
-     * change, the web-component will dispatch a new state of view.
-     */
-    static attributes = {
-        /**
-         * @param {string} newValue -  value to be analyzed by the function
-         * @param {any} value - existing value within this.props
-         * @param {string} property -   property to work within this.props
-         */
-        name(newValue, value, property) {}
-    };
-    /**
-     * @function
-     * @param {object} props - the component will receive the props collected by the web-component
-     * @return {object}
-     * @example the return of the component should always be the host tag
-     * <host/>
-     */
-    render(props){
-        return <host/>
-    }
-}
-```
-
-## type
-
-Returns a function that reads the mutation of the attributes of the web-component, this function allows to validate the existence and modify the value.
-
-```js
-type(
-    /**
-    * @param {string} type - define the type of variable to accept as an attribute
-    * @param {boolean} [required] - define if it is a required attribute
-    */
-    {
-        type: "string",
-        required: true
-    }
-);
-```
-
-
-## Example
-
-The following example shows how to define types using type, this function will analyze the attributes defined in web-component, to format it to work by component
+This class allows the creation of web-components based on [@atomico/core](https://github.com/atomicojs/core).
 
 ```jsx
 import { h } from "@atomico/core";
-import { Element, type } from "@atomico/element";
+import Element from "@atomico/element";
 
 class MyTag extends Element {
-    static attributes = {
-        json: type({ type: "object" }),
-        array: type({ type: "object" }),
-        number: type({ type: "number" })
-    };
-    render(props) {
-        console.log(props);
-        return <host>Hello word</host>;
-    }
+	static attributes = {
+		value: String
+	};
+	render(props) {
+		return <host>Hello {props.value}</host>;
+	}
 }
 
 customElements.define("my-tag", MyTag);
 ```
+
+## render
+
+render is equivalent to the functional instance of a component inside `@atomico/core`, so you can use the hooks.
+
+render receives as the first parameter a last snapshot of `this.props`, **render must return the tag `<host/>`**
+
+## static attributes
+
+allows to create attributes observable by the component, although the attributes within the web-component are expressed as String, `@atomico/element` force the definition of the type on the String transforming it to the type defined within `static attributes`.
+
+## Types of attributes
+
+### String
+```js
+static attributes = {value:String};
+```
+### Number
+```js
+static attributes = {value:Number};
+```
+### Boolean
+```js
+static attributes = {value:Boolean};
+```
+### Object
+```js
+static attributes = {value:Object};
+```
+### Array
+```js
+static attributes = {value:Array};
+```
+> if the type does not match the input value, an error will be issued that defines the attribute and the expected type.
+
+## update
+
+This method allows to force an update on render, to its see allows a first argument that extends to `this.props`.
+
+You can use this method for the creation of reactive properties.
+
+```jsx
+import { h } from "@atomico/core";
+import Element from "@atomico/element";
+
+class MyTag extends Element {
+	get show() {
+		return this.props.show;
+	}
+	set show(value) {
+		this.update({ show: true });
+	}
+	render(props) {
+		return <host>{props.show && "👋"}</host>;
+	}
+}
+
+customElements.define("my-tag", MyTag);
+```
+
+
+

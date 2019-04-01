@@ -4,75 +4,72 @@ let defer = Promise.resolve();
 
 let ID = 0;
 
-export function type(schema) {
-	return (value, prevValue, field) => {
-		if (schema.required && value == null)
-			throw new Error(`the attribute ${field} is required`);
-		value =
-			schema.type == "string"
-				? value
-				: schema.type == "boolean"
-				? true
-				: JSON.parse(value);
+let host = h("host");
 
-		if (typeof value != schema.type) {
-			throw new Error(`the field ${field} must be of the type ${schema.type}`);
-		}
-		return value;
-	};
+function parse(value) {
+	return JSON.parse(value);
 }
 
-export class Element extends HTMLElement {
+export default class Element extends HTMLElement {
 	constructor() {
 		super();
-		let state = "@wc." + ID++,
-			{ attributes } = this.constructor,
-			props = (this.props = {}),
-			prevent;
+		let prevent;
 
-		this.set = (name, nextValue) => {
-			if (typeof name == "object" && nextValue == null) {
-				for (let key in name) this.set(key, name[key]);
-				return;
-			}
-			let alias = name.replace(/-(\w)/g, (all, chart) => chart.toUpperCase());
-
-			if (attributes[name]) {
-				nextValue = attributes[name](nextValue, props[alias], name);
-			}
-			if (props[alias] == nextValue) return;
-			props[name] = nextValue;
-			if (!prevent && this.mounted) {
+		this.props = {};
+		this.render = this.render.bind(this);
+		this.renderID = "@wc." + ID++;
+		this.update = props => {
+			this.props = { ...this.props, ...props };
+			if (!prevent) {
 				prevent = true;
 				defer.then(() => {
 					prevent = false;
-					this.update(props);
+					render(h(this.render, this.props), this, this.renderID);
 				});
 			}
 		};
-		this.render = this.render.bind(this);
-		this.update = props => {
-			render(props ? h(this.render, props) : h("host"), this, state);
-		};
-		this.setup = () => {
-			this.mounted = true;
-			for (let key in attributes) this.set(key, this.getAttribute(key));
-			this.update(props);
-		};
 	}
 	static get observedAttributes() {
-		return Object.keys(this.attributes || {});
-	}
-	connectedCallback() {
-		this.setup();
+		let attributes = this.attributes || {},
+			keys = [];
+		for (let key in attributes) {
+			keys.push(key.replace(/([A-Z])/g, "-$1").toLowerCase());
+		}
+		return keys;
 	}
 	disconnectedCallback() {
-		this.update(null);
+		render(host, this, this.renderID);
 	}
-	attributeChangedCallback(name, prevValue, nextValue) {
-		this.set(name, nextValue);
+	attributeChangedCallback(name, oldValue, value) {
+		if (oldValue == value) return;
+		name = name.replace(/-(\w)/g, (all, letter) => letter.toUpperCase());
+		let { attributes } = this.constructor,
+			error,
+			type = attributes[name];
+		try {
+			switch (type) {
+				case Number:
+					value = parse(value);
+					break;
+				case Boolean:
+					value = value == "" ? true : parse(value);
+					value = value == 1 || value == 0 ? value == 1 : value;
+					break;
+				case Object:
+				case Array:
+					value = parse(value);
+					break;
+			}
+		} catch (e) {
+			error = true;
+		}
+		if (!error && {}.toString.call(value) == `[object ${type.name}]`) {
+			this.update({ [name]: value });
+		} else {
+			throw `the attribute [${name}] must be of the type [${type.name}]`;
+		}
 	}
 	render() {
-		return h("host");
+		return host;
 	}
 }
