@@ -28,6 +28,7 @@ export default class Element extends HTMLElement {
 				});
 			}
 		};
+		this.update();
 	}
 	static get observedAttributes() {
 		let attributes = this.attributes || {},
