@@ -1,7 +1,5 @@
 import { h, render } from "@atomico/core";
 
-let defer = Promise.resolve();
-
 let ID = 0;
 
 let host = h("host");
@@ -14,21 +12,25 @@ export default class Element extends HTMLElement {
 	constructor() {
 		super();
 		let prevent;
-
+		this.mounted = new Promise(resolve => (this.mount = resolve));
 		this.props = {};
 		this.render = this.render.bind(this);
 		this.renderID = "@wc." + ID++;
+
 		this.update = props => {
 			this.props = { ...this.props, ...props };
 			if (!prevent) {
 				prevent = true;
-				defer.then(() => {
+				this.mounted.then(() => {
 					prevent = false;
 					render(h(this.render, this.props), this, this.renderID);
 				});
 			}
 		};
 		this.update();
+	}
+	connectedCallback() {
+		this.mount();
 	}
 	static get observedAttributes() {
 		let attributes = this.attributes || {},
@@ -50,11 +52,10 @@ export default class Element extends HTMLElement {
 		try {
 			switch (type) {
 				case Number:
-					value = parse(value);
+					value = Number(value);
 					break;
 				case Boolean:
-					value = value == "" ? true : parse(value);
-					value = value == 1 || value == 0 ? value == 1 : value;
+					value = parse(value || "true") == true;
 					break;
 				case Object:
 				case Array:
