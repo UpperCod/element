@@ -1,7 +1,7 @@
 {
 	"name": "@atomico/element",
-	"description": "css-in-js, small and minimalist",
-	"version": "0.3.0",
+	"description": "It allows the creation of reactive web-components based on JSX with @atomico/core",
+	"version": "0.3.1",
 	"main": "dist/atomico-element.js",
 	"module": "dist/atomico-element.mjs",
 	"umd:main": "dist/atomico-element.umd.js",
@@ -20,9 +20,11 @@
 		"watch": "rollup -c -w",
 		"prepare": "npm run build"
 	},
-	"devDependencies": {
+	"dependencies": {
 		"@atomico/base-element": "^0.1.0",
-		"@atomico/core": "^1.3.13",
+		"@atomico/core": "^1.3.13"
+	},
+	"devDependencies": {
 		"rollup": "^1.7.3",
 		"rollup-plugin-bundle-size": "^1.0.3",
 		"rollup-plugin-terser": "^4.0.3"
