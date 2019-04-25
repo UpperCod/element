@@ -1,22 +1,23 @@
 import { h, render } from "@atomico/core";
+import BaseElement from "@atomico/base-element";
 
 let ID = 0;
 
 let host = h("host");
 
-function parse(value) {
-	return JSON.parse(value);
-}
+export * from "@atomico/core";
 
-export default class Element extends HTMLElement {
+export class Element extends BaseElement {
 	constructor() {
 		super();
 		let prevent;
-		this.mounted = new Promise(resolve => (this.mount = resolve));
-		this.props = {};
 		this.render = this.render.bind(this);
+		// create a unique id to store the atomico state.
+		// allowing the use of tag <host> securely
 		this.renderID = "@wc." + ID++;
-
+		/**
+		 * @param {Object<string,any>} - Properties to update the component
+		 */
 		this.update = props => {
 			this.props = { ...this.props, ...props };
 			if (!prevent) {
@@ -27,49 +28,10 @@ export default class Element extends HTMLElement {
 				});
 			}
 		};
+
+		this.unmounted.then(() => render(host, this, this.renderID));
+
 		this.update();
-	}
-	connectedCallback() {
-		this.mount();
-	}
-	static get observedAttributes() {
-		let attributes = this.attributes || {},
-			keys = [];
-		for (let key in attributes) {
-			keys.push(key.replace(/([A-Z])/g, "-$1").toLowerCase());
-		}
-		return keys;
-	}
-	disconnectedCallback() {
-		render(host, this, this.renderID);
-	}
-	attributeChangedCallback(name, oldValue, value) {
-		if (oldValue == value) return;
-		name = name.replace(/-(\w)/g, (all, letter) => letter.toUpperCase());
-		let { attributes } = this.constructor,
-			error,
-			type = attributes[name];
-		try {
-			switch (type) {
-				case Number:
-					value = Number(value);
-					break;
-				case Boolean:
-					value = parse(value || "true") == true;
-					break;
-				case Object:
-				case Array:
-					value = parse(value);
-					break;
-			}
-		} catch (e) {
-			error = true;
-		}
-		if (!error && {}.toString.call(value) == `[object ${type.name}]`) {
-			this.update({ [name]: value });
-		} else {
-			throw `the attribute [${name}] must be of the type [${type.name}]`;
-		}
 	}
 	render() {
 		return host;
