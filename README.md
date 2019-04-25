@@ -1,81 +1,118 @@
 # @atomico/element
 
-This class allows the creation of web-components based on [@atomico/core](https://github.com/atomicojs/core).
+[![npm](https://badgen.net/npm/v/@atomico/element)](http://npmjs.com/@atomico/element)
+[![gzip](https://badgen.net/bundlephobia/minzip/@atomico/element)](https://bundlephobia.com/result?p=@atomico/element)
+
+It allows the creation of reactive web-components based on JSX, thanks to [@atomico/core](https://github.com/atomicojs/core) and [@atomico/base-element](https://github.com/atomicojs/base-element).
 
 ```jsx
-import { h } from "@atomico/core";
-import Element from "@atomico/element";
+let { Element, h } = this["@atomico/element"];
 
-class MyTag extends Element {
-	static attributes = {
-		value: String
+class AtomicoCounter extends Element {
+	static observables = {
+		value: Number
 	};
-	render(props) {
-		return <host>Hello {props.value}</host>;
+	render({ value = 0 }) {
+		return (
+			<host>
+				<button onClick={() => this.value++}>Increment</button>
+				<span>::{value}::</span>
+				<button onClick={() => this.value--}>Decrement</button>
+			</host>
+		);
 	}
 }
-
-customElements.define("my-tag", MyTag);
+customElements.define("atomico-counter", AtomicoCounter);
 ```
 
-## render
+## Observation
 
-render is equivalent to the functional instance of a component inside `@atomico/core`, so you can use the hooks.
+`@atomico/element`, although it uses classes for the generation of web-components, the rendering behavior is functional, so you can use all the documented in [@atomico/core](https://github.com/atomicojs/core), as hooks and contexts.
 
-render receives as the first parameter a last snapshot of `this.props`, **render must return the tag `<host/>`**
+## Advantage
 
-## static attributes
+## Hooks
 
-allows to create attributes observable by the component, although the attributes within the web-component are expressed as String, `@atomico/element` force the definition of the type on the String transforming it to the type defined within `static attributes`.
-
-## Types of attributes
-
-### String
-```js
-static attributes = {value:String};
-```
-### Number
-```js
-static attributes = {value:Number};
-```
-### Boolean
-```js
-static attributes = {value:Boolean};
-```
-### Object
-```js
-static attributes = {value:Object};
-```
-### Array
-```js
-static attributes = {value:Array};
-```
-> if the type does not match the input value, an error will be issued that defines the attribute and the expected type.
-
-## update
-
-This method allows to force an update on render, to its see allows a first argument that extends to `this.props`.
-
-You can use this method for the creation of reactive properties.
+Thanks to `@atomico/core` you can use [hooks](https://github.com/atomicojs/core#hooks) to abstract the logic of the web-component.
 
 ```jsx
-import { h } from "@atomico/core";
-import Element from "@atomico/element";
-
-class MyTag extends Element {
-	get show() {
-		return this.props.show;
-	}
-	set show(value) {
-		this.update({ show: true });
-	}
-	render(props) {
-		return <host>{props.show && "👋"}</host>;
+class TagCounter extends Element {
+	render() {
+		let [state, setState] = useState(0);
+		return (
+			<host>
+				<button onClick={() => setState(state - 1)}>Decrement</button>
+				<span>::{state}::</span>
+				<button onClick={() => setState(state + 1)}>Increment</button>
+			</host>
+		);
 	}
 }
-
-customElements.define("my-tag", MyTag);
 ```
 
+## Not everything should be a web-component
 
+In `@atomico/element` you can create reusable components out of the box of web-components, allowing to keep the pattern of [HoCs](https://reactjs.org/docs/higher-order-components.html) virtual without problems when composing views.
 
+```jsx
+function PrivateButton(props) {
+	return <button {...props} />;
+}
+
+class PublicWebComponent extends Element {
+	render() {
+		return (
+			<host>
+				<PrivateButton>btn-1</PrivateButton>
+				<PrivateButton>btn-2</PrivateButton>
+			</host>
+		);
+	}
+}
+```
+
+### shadowDom declarativo en el JSX
+
+`@atomico/element`, the use of shadow Dom is not subject to be used only within a web-component, it can be applied to any html element that supports it.
+
+```jsx
+export function Title(props) {
+	return (
+		<h1 shadowDom>
+			<style>{`
+			@import url('https://fonts.googleapis.com/css?family=Montserrat');
+			:host{font-family: 'Montserrat', sans-serif;}
+			`}</style>
+			{props.children}
+		</h1>
+	);
+}
+```
+
+### tag host
+
+`<host>` this tag allows you to directly point to the web-component, achieving a more declarative code
+
+```jsx
+class Tag extends Element {
+	/**❌**/
+	constructor() {
+		super();
+		this.attachShadow({ mode: "open" });
+		this.style.background = "black";
+		this.addEventListener("click", () => {
+			console.log("event!");
+		});
+	}
+	/**✔️**/
+	render() {
+		return (
+			<host
+				shadowDom
+				onClick={() => console.log("event")}
+				style={{ background: "black" }}
+			/>
+		);
+	}
+}
+```

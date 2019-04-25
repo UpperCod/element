@@ -18,7 +18,8 @@ export default {
 			format: "umd",
 			name: pkg.name,
 			globals: {
-				"@atomico/core": "@atomico/core"
+				"@atomico/core": "@atomico/core",
+				"@atomico/base-element": "@atomico/base-element"
 			}
 		},
 		{
