@@ -6,7 +6,7 @@
 It allows the creation of reactive web-components based on JSX, thanks to [@atomico/core](https://github.com/atomicojs/core) and [@atomico/base-element](https://github.com/atomicojs/base-element).
 
 ```jsx
-let { Element, h } = this["@atomico/element"];
+import { Element, h } from "@atomico/element";
 
 class AtomicoCounter extends Element {
 	static observables = {
@@ -71,7 +71,7 @@ class PublicWebComponent extends Element {
 }
 ```
 
-### shadowDom declarativo en el JSX
+### Declarative shadowDom in the JSX
 
 `@atomico/element`, the use of shadow Dom is not subject to be used only within a web-component, it can be applied to any html element that supports it.
 
