@@ -1,32 +1,25 @@
 import pkg from "./package.json";
-import size from "rollup-plugin-bundle-size";
+import resolve from "rollup-plugin-node-resolve";
 import { terser } from "rollup-plugin-terser";
+import size from "rollup-plugin-bundle-size";
 
-let plugins = [terser(), size()];
-
-export default {
-	input: pkg.source,
-	output: [
-		{
-			file: pkg.main,
-			sourcemap: true,
-			format: "cjs"
+export default [
+	{
+		input: pkg.source,
+		output: {
+			file: pkg.module,
+			format: "es"
 		},
-		{
-			file: pkg["umd:main"],
-			sourcemap: true,
-			format: "umd",
-			name: pkg.name,
-			globals: {
-				"@atomico/core": "@atomico/core",
-				"@atomico/base-element": "@atomico/base-element"
-			}
-		},
-		{
-			file: pkg["module"],
+		external: ["@atomico/core", "@atomico/base-element"],
+		plugins: [size()]
+	},
+	{
+		input: "src/browser.js",
+		output: {
+			file: pkg.unpkg,
 			sourcemap: true,
 			format: "es"
-		}
-	],
-	plugins
-};
+		},
+		plugins: [resolve(), terser(), size()]
+	}
+];

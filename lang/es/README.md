@@ -116,3 +116,35 @@ class Tag extends Element {
 	}
 }
 ```
+
+## Package
+
+los bundles generados por `atomico/element`, son módulos modernos, uno para navegador que incluye todas las dependencias y uno para herramientas de bundle como [Rollup](https://rollupjs.org), que permite aplicar tree-shaking.
+
+### Browser
+
+Este formato de pkg permite soporte en navegadores modernos, ideal para el desarrollo de prototipos, ya que los navegadores no soportan JSX, `atomico/element` acopla [htm](https://github.com/developit/htm) al bundle de exportación.
+
+```js
+import { Element, html } from "https://unpkg.com/@atomico/element/browser.js";
+
+class Counter extends Element {
+	static observers = {
+		value: Number
+	};
+	increment() {
+		this.value += 1;
+	}
+	decrement() {
+		this.value -= 1;
+	}
+	render() {
+		return html`
+			<host shadowDom>
+				<button onClick=${this.increment}>Increment</button>
+				<button onClick=${this.decrement}>Decrement</button>
+			</host>
+		`;
+	}
+}
+```
