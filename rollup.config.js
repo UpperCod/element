@@ -20,6 +20,7 @@ export default [
 			sourcemap: true,
 			format: "es"
 		},
-		plugins: [resolve(), terser(), size()]
+		//plugins: [resolve(), terser(), size()]
+		plugins: [size()]
 	}
 ];
