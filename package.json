@@ -32,7 +32,6 @@
 		"karma-chrome-launcher": "^2.2.0",
 		"karma-jasmine": "^2.0.1",
 		"karma-rollup-preprocessor": "^7.0.0",
-		"karma-sourcemap-loader": "^0.3.7",
 		"karma-spec-reporter": "^0.0.32",
 		"rollup": "^1.7.4",
 		"rollup-plugin-bundle-size": "^1.0.3",

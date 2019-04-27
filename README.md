@@ -56,6 +56,9 @@ In `@atomico/element` you can create reusable components out of the box of web-c
 
 ```jsx
 function PrivateButton(props) {
+	useEffect(() => {
+		console.log("component private mounted");
+	}, []);
 	return <button {...props} />;
 }
 
