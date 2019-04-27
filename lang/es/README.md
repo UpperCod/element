@@ -125,11 +125,17 @@ los bundles generados por `atomico/element`, son módulos modernos, uno para nav
 
 Este formato de pkg permite soporte en navegadores modernos, ideal para el desarrollo de prototipos, ya que los navegadores no soportan JSX, `atomico/element` acopla [htm](https://github.com/developit/htm) al bundle de exportación.
 
+[**Abrir ejemplo en editor**](https://stackblitz.com/edit/atomico-element?file=index.js)
+
 ```js
-import { Element, html } from "https://unpkg.com/@atomico/element/browser.js";
+import {
+	Element,
+	html
+} from "https://unpkg.com/@atomico/element/browser?module";
 
 class Counter extends Element {
-	static observers = {
+	props = { value: 0 };
+	static observables = {
 		value: Number
 	};
 	increment() {
@@ -138,10 +144,11 @@ class Counter extends Element {
 	decrement() {
 		this.value -= 1;
 	}
-	render() {
+	render({ value }) {
 		return html`
 			<host shadowDom>
 				<button onClick=${this.increment}>Increment</button>
+				<span>::${value}::</span>
 				<button onClick=${this.decrement}>Decrement</button>
 			</host>
 		`;
