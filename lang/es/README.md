@@ -31,7 +31,32 @@ customElements.define("atomico-counter", AtomicoCounter);
 
 ## Ventajas
 
-## Hooks
+### Comportamiento funcional
+
+`toClass`, creara una clase a base de la función, la propiedad observable `value`, permitirá definir un estado inicial para `useState`. **Recuerde un web-component creado con atomico siempre debe retornar `<host/>`**
+
+```jsx
+import { toClass, h, useState } from "@atomico/element";
+
+function MyWc({ value }) {
+	let [state, setState] = useState(value);
+	return (
+		<host>
+			<button onClick={() => setState(state + 1)}>Increment</button>
+			<span>::{state}::</span>
+			<button onClick={() => setState(state - 1)}>Decrement</button>
+		</host>
+	);
+}
+
+MyWc.observables = {
+	value: Number
+};
+
+customElement.define("my-wc", toClass(MyWc));
+```
+
+### Hooks
 
 Gracias a `@atomico/core` ud podra usar [hooks](https://github.com/atomicojs/core#hooks) para abstraer la lógica del web-component.
 
@@ -50,7 +75,7 @@ class TagCounter extends Element {
 }
 ```
 
-## No todo debe ser un web-component
+### No todo debe ser un web-component
 
 En `@atomico/element` ud puede crear componentes reutilizables fuera de la caja de web-components, permitiendo mantener el patrón de [HoCs](https://reactjs.org/docs/higher-order-components.html) virtual sin problemas al momento de componer vistas.
 
