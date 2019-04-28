@@ -41,3 +41,19 @@ export class Element extends BaseElement {
 		return host;
 	}
 }
+/**
+ * @param {Function} component
+ * @example
+ * // define a functional component
+ * function MyWc(){}
+ * // define the observables of the component
+ * MyWc.observables = {value:String}
+ * // when using the toClass function the functional component will be a class
+ * customElements.define("my-wc",toClass(MyWc));
+ */
+export function toClass(component) {
+	let CustomElement = class extends Element {};
+	CustomElement.prototype.render = component;
+	CustomElement.observables = component.observables;
+	return CustomElement;
+}
