@@ -1,4 +1,4 @@
-import { Element, h, useEffect } from "../src/index";
+import { Element, h, toClass } from "../src/index";
 
 class CustomElement extends Element {
 	static observables = {
@@ -75,6 +75,26 @@ describe("Element Lifecycle", () => {
 		await node.mounted;
 
 		expect(node.innerHTML).toBe("<h1>hola</h1>");
+
+		done();
+	});
+
+	it("Test toClass", async done => {
+		function MyWc({ value }) {
+			return <host>function {value}</host>;
+		}
+
+		MyWc.observables = { value: Number };
+
+		customElements.define("custom-element-function", toClass(MyWc));
+
+		let node = scope(
+			`<custom-element-function value="10"></custom-element-function>`
+		);
+
+		await node.mounted;
+
+		expect(node.textContent).toBe("function 10");
 
 		done();
 	});
