@@ -1,6 +1,7 @@
 import { h, render } from "@atomico/core";
 import BaseElement from "@atomico/base-element";
-export * from "@atomico/core";
+
+export { h } from "@atomico/core";
 
 let ID = 0;
 
@@ -9,16 +10,21 @@ let host = h("host");
 export class Element extends BaseElement {
 	constructor() {
 		super();
+		/**@type {boolean} */
 		let prevent;
+		/**
+		 * @namespace
+		 * @property {string} id - identifier to store the state of the virtual-dom
+		 * @property {HTMLElement} bind - allows bindear events defining as context the same customElement
+		 * @property {boolean} host - allows to enable control over the main container, in this case the customElement
+		 */
 		let options = {
 			id: "@wc." + ID++,
 			bind: this,
 			host: true
 		};
-		this.render = this.render.bind(this);
-		// create a unique id to store the atomico state.
-		// allowing the use of tag <host> securely
 
+		this.render = this.render.bind(this);
 		/**
 		 * @param {Object<string,any>} - Properties to update the component
 		 */
@@ -45,15 +51,22 @@ export class Element extends BaseElement {
  * @param {Function} component
  * @example
  * // define a functional component
- * function MyWc(){}
+ * function MyWc(props){}
  * // define the observables of the component
  * MyWc.observables = {value:String}
  * // when using the toClass function the functional component will be a class
- * customElements.define("my-wc",toClass(MyWc));
+ * customElements.define("my-wc",createClass(MyWc));
  */
-export function toClass(component) {
+export function createClass(component) {
 	let CustomElement = class extends Element {};
 	CustomElement.prototype.render = component;
 	CustomElement.observables = component.observables;
 	return CustomElement;
+}
+
+export function customElement(tagName, component) {
+	customElements.define(
+		tagName,
+		component instanceof Element ? component : createClass(component)
+	);
 }
