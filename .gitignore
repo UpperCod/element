@@ -1,4 +1,5 @@
 node_modules
 /dev
-/*.js
+/browser.js
+/module.js
 /*.js.map
