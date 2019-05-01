@@ -1,4 +1,4 @@
-import { Element, h, toClass } from "../src/index";
+import { h, Element, createClass } from "../src/index";
 
 class CustomElement extends Element {
 	static observables = {
@@ -86,7 +86,7 @@ describe("Element Lifecycle", () => {
 
 		MyWc.observables = { value: Number };
 
-		customElements.define("custom-element-function", toClass(MyWc));
+		customElements.define("custom-element-function", createClass(MyWc));
 
 		let node = scope(
 			`<custom-element-function value="10"></custom-element-function>`
