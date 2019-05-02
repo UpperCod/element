@@ -72,12 +72,18 @@ export function createClass(component) {
 	CustomElement.styles = component.styles;
 	return CustomElement;
 }
-
+/**
+ * register the component, be it a class or function
+ * @param {string} tagName
+ * @param {Function} component
+ * @return {Object} returns a jsx component
+ */
 export function customElement(tagName, component) {
 	customElements.define(
 		tagName,
 		component instanceof Element ? component : createClass(component)
 	);
+	return props => h(tagName, props);
 }
 
 export function css(string) {
