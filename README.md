@@ -15,7 +15,7 @@ npm install @atomico/core @atomico/element
 ```
 
 ```jsx
-import { h, Element } from "@atomico/element";
+import { h, Element, customElement } from "@atomico/element";
 
 class AtomicoCounter extends Element {
 	static observables = {
@@ -31,7 +31,9 @@ class AtomicoCounter extends Element {
 		);
 	}
 }
-customElements.define("atomico-counter", AtomicoCounter);
+
+customElement("atomico-counter", AtomicoCounter);
+// customElements.define("atomico-counter", AtomicoCounter);
 ```
 
 ## Observation
@@ -67,7 +69,8 @@ MyWc.observables = {
 	value: Number
 };
 
-customElement.define("my-wc", createClass(MyWc));
+customElements.define("my-wc", createClass(MyWc));
+// customElement("my-wc",MyWc);
 ```
 
 #### State with observables
@@ -92,6 +95,7 @@ MyWc.observables = {
 };
 
 customElement.define("my-wc", createClass(MyWc));
+// customElement("my-wc",MyWc);
 ```
 
 ### Hooks
