@@ -42,6 +42,7 @@ export class Element extends BaseElement {
 					render(h(this.render, this.props), this, options);
 					if (styles && this.shadowRoot) {
 						this.shadowRoot.adoptedStyleSheets = styles;
+						styles = null;
 					}
 				});
 			}
