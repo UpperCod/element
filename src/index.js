@@ -3,6 +3,8 @@ import BaseElement from "@atomico/base-element";
 
 export { h } from "@atomico/core";
 
+let cache = {};
+
 let ID = 0;
 
 let host = h("host");
@@ -23,7 +25,10 @@ export class Element extends BaseElement {
 			bind: this,
 			host: true
 		};
-
+		/**
+		 * add support {@link https://developer.mozilla.org/es/docs/Web/API/CSSStyleSheet}
+		 */
+		let { styles } = this.constructor;
 		this.render = this.render.bind(this);
 		/**
 		 * @param {Object<string,any>} - Properties to update the component
@@ -35,6 +40,9 @@ export class Element extends BaseElement {
 				this.mounted.then(() => {
 					prevent = false;
 					render(h(this.render, this.props), this, options);
+					if (styles && this.shadowRoot) {
+						this.shadowRoot.adoptedStyleSheets = styles;
+					}
 				});
 			}
 		};
@@ -61,6 +69,7 @@ export function createClass(component) {
 	let CustomElement = class extends Element {};
 	CustomElement.prototype.render = component;
 	CustomElement.observables = component.observables;
+	CustomElement.styles = component.styles;
 	return CustomElement;
 }
 
@@ -69,4 +78,18 @@ export function customElement(tagName, component) {
 		tagName,
 		component instanceof Element ? component : createClass(component)
 	);
+}
+
+export function css(string) {
+	if (Array.isArray(string)) {
+		let args = arguments;
+		string = string
+			.map((value, index) => value + (args[index + 1] || ""))
+			.join("");
+	}
+	if (!cache[string]) {
+		cache[string] = new CSSStyleSheet();
+		cache[string].replace(string);
+	}
+	return cache[string];
 }

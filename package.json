@@ -1,7 +1,7 @@
 {
 	"name": "@atomico/element",
 	"description": "It allows the creation of reactive web-components based on JSX with @atomico/core",
-	"version": "0.6.0",
+	"version": "0.6.1",
 	"main": "module.js",
 	"module": "module.js",
 	"unpkg": "browser.js",
