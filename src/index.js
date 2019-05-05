@@ -7,8 +7,6 @@ let cache = {};
 
 let ID = 0;
 
-let host = h("host");
-
 export class Element extends BaseElement {
 	constructor() {
 		super();
@@ -48,12 +46,9 @@ export class Element extends BaseElement {
 			}
 		};
 
-		this.unmounted.then(() => render(host, this, options));
+		this.unmounted.then(() => render("", this, options));
 
 		this.update();
-	}
-	render() {
-		return host;
 	}
 }
 /**
