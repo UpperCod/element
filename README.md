@@ -1,223 +1,66 @@
-# @atomico/element
+## @atomico/element
 
-[![npm](https://badgen.net/npm/v/@atomico/element)](http://npmjs.com/@atomico/element)
-[![gzip](https://badgen.net/bundlephobia/minzip/@atomico/element)](https://bundlephobia.com/result?p=@atomico/element)
+It allows to join [@atomico/core](https://github.com/atomicojs/core) to web-components in a simple and expressive way
 
-It allows the creation of reactive web-components based on JSX, thanks to [@atomico/core](https://github.com/atomicojs/core) and [@atomico/base-element](https://github.com/atomicojs/base-element).
+## What is Atomico?
 
-## instalacion
+Atomico is a [personal](https://github.com/uppercod) Open Source project, whose mission is to simplify the creation of sustainable and scalable interfaces with minimal impact on browser resources.
 
-```bash
-# scaffolding
-npm init @atomico
-# manual
-npm install @atomico/core @atomico/element
-```
+## From React to web-component
 
-```jsx
-import { h, Element, customElement } from "@atomico/element";
+Do not forget that these libraries are similar in api, but Atomico's orientation is to encourage the use of web-components with or without Atomico, since web-components are agnostic to framework or libraries.
 
-class AtomicoCounter extends Element {
-	static observables = {
-		value: Number
-	};
-	render({ value = 0 }) {
-		return (
-			<host>
-				<button onClick={() => this.value++}>Increment</button>
-				<span>::{value}::</span>
-				<button onClick={() => this.value--}>Decrement</button>
-			</host>
-		);
-	}
-}
+![full](https://res.cloudinary.com/dz0i8dmpt/image/upload/v1557340605/github/atomico-element/full.png)
 
-customElement("atomico-counter", AtomicoCounter);
-// customElements.define("atomico-counter", AtomicoCounter);
-```
+### Import differences
 
-## Observation
+![import](./import.png)
 
-`@atomico/element`, although it uses classes for the generation of web-components, the rendering behavior is functional, so you can use all the documented in [@atomico/core](https://github.com/atomicojs/core), like hooks and contexts.
+you will need 2 imports, [@atomico/element](https://github.com/atomicojs/element) this allows you to work with web-components and [@atomico/core](https://github.com/atomicojs/core) that has support for hooks, context, HoCs, virtual-dom and more.
 
-## Advantage
+### Component to web-component
 
-### Functions like web-component
+![component](https://res.cloudinary.com/dz0i8dmpt/image/upload/v1557340605/github/atomico-element/component.png)
 
-`createClass`, will create a class based on the function, the observable property `value`, will allow defining an initial state for `useState`, **Remember a web-component created with atomico/element should always return host `<host/>`**.
+**Atomico allows both syntax**, so you can use components and web-components together, but now we focus on the creation of web-components
 
-#### State with hooks
+### Fragment to host
 
-The custom Element with observables possess a transparent state control, the hooks allow to break this, the state will be private.
+Atomico does not have support for fragments, but to improve the development experience Atomico creates the tag `<host>`, this has an effect similar to the css selector `:host{}`
 
-```jsx
-import { useState } from "@atomico/core";
-import { h, createClass } from "@atomico/element";
+The `<host>` tag brings better benefits, since it allows to manipulate properties and attributes of the web-component from the same JSX, the following image shows the difference between a vanilla web-component and the atomic host tag, to understand its benefit and equivalence.
 
-function MyWc({ value }) {
-	let [state, setState] = useState(value);
-	return (
-		<host>
-			<button onClick={() => setState(state + 1)}>Increment</button>
-			<span>::{state}::</span>
-			<button onClick={() => setState(state - 1)}>Decrement</button>
-		</host>
-	);
-}
+![host](https://res.cloudinary.com/dz0i8dmpt/image/upload/v1557340605/github/atomico-element/host.png)
 
-MyWc.observables = {
-	value: Number
-};
+### Render to customElement
 
-customElements.define("my-wc", createClass(MyWc));
-// customElement("my-wc",MyWc);
-```
+![render](https://res.cloudinary.com/dz0i8dmpt/image/upload/v1557340605/github/atomico-element/render.png)
 
-#### State with observables
+render allows to point the component to a specific node of the document, customElement allows associating its function to a web-component, so you should only invoke the web-component from the HTML, React or Vue, without worrying about specifying the node.
 
-The `MyWc` function will become part of the class that makes up the customElement, occupying the place of the render method, only for this reason it can access the context this
+## definition of observables
 
-```jsx
-import { h, createClass } from "@atomico/element";
+The above shows the similar, the `observables` are the Atomico layer to define properties and attributes of the web-component, to identify the types and force them if they come from a `string` Atomico makes use of the declarations like `Number`, `String`,`Boolean`, `Object`, `Array`, `Function` and `Promise`, to define the types of properties and attributes.
 
-function MyWc({ value }) {
-	return (
-		<host>
-			<button onClick={() => this.value+=1}>Increment</button>
-			<span>::{state}::</span>
-			<button onClick={() => this.value-=1)}>Decrement</button>
-		</host>
-	);
-}
+![observables](https://res.cloudinary.com/dz0i8dmpt/image/upload/v1557340605/github/atomico-element/observables.png)
 
-MyWc.observables = {
-	value: Number
-};
+every attribute is defined as property so you can use `document.querySelector("my-wc").value = "new value"` for its definition.
 
-customElement.define("my-wc", createClass(MyWc));
-// customElement("my-wc",MyWc);
-```
-
-### Hooks
-
-Thanks to `@atomico/core` you can use [hooks](https://github.com/atomicojs/core#hooks) to abstract the logic of the web-component.
-
-```jsx
-class TagCounter extends Element {
-	render() {
-		let [state, setState] = useState(0);
-		return (
-			<host>
-				<button onClick={() => setState(state - 1)}>Decrement</button>
-				<span>::{state}::</span>
-				<button onClick={() => setState(state + 1)}>Increment</button>
-			</host>
-		);
-	}
-}
-```
-
-### Not everything should be a web-component
-
-In `@atomico/element` you can create reusable components out of the box of web-components, allowing to keep the pattern of [HoCs](https://reactjs.org/docs/higher-order-components.html) virtual without problems when composing views.
-
-```jsx
-function PrivateButton(props) {
-	useEffect(() => {
-		console.log("component private mounted");
-	}, []);
-	return <button {...props} />;
-}
-
-class PublicWebComponent extends Element {
-	render() {
-		return (
-			<host>
-				<PrivateButton>btn-1</PrivateButton>
-				<PrivateButton>btn-2</PrivateButton>
-			</host>
-		);
-	}
-}
-```
-
-### Declarative shadowDom in the JSX
-
-`@atomico/element`, the use of shadow Dom is not subject to be used only within a web-component, it can be applied to any html element that supports it.
-
-```jsx
-export function Title(props) {
-	return (
-		<h1 shadowDom>
-			<style>{`
-			@import url('https://fonts.googleapis.com/css?family=Montserrat');
-			:host{font-family: 'Montserrat', sans-serif;}
-			`}</style>
-			{props.children}
-		</h1>
-	);
-}
-```
-
-### tag host
-
-`<host>` this tag allows you to directly point to the web-component, achieving a more declarative code
-
-```jsx
-class Tag extends Element {
-	/**❌**/
-	constructor() {
-		super();
-		this.attachShadow({ mode: "open" });
-		this.style.background = "black";
-		this.addEventListener("click", () => {
-			console.log("event!");
-		});
-	}
-	/**✔️**/
-	render() {
-		return (
-			<host
-				shadowDom
-				onClick={() => console.log("event")}
-				style={{ background: "black" }}
-			/>
-		);
-	}
-}
-```
-
-### Browser
-
-This pkg format allows support in modern browsers, ideal for the development of prototypes, since browsers do not support JSX, `atomico/element` attaches [htm](https://github.com/developit/htm) to the bundle of export.
-
-[**Open example in editor**](https://stackblitz.com/edit/atomico-element?file=index.js)
+Observables are not limited to just one property you can create more complex sets.
 
 ```js
-import {
-	Element,
-	html
-} from "https://unpkg.com/@atomico/element/browser?module";
-
-class Counter extends Element {
-	props = { value: 0 };
-	static observables = {
-		value: Number
-	};
-	increment() {
-		this.value += 1;
-	}
-	decrement() {
-		this.value -= 1;
-	}
-	render({ value }) {
-		return html`
-			<host shadowDom>
-				<button onClick=${this.increment}>Increment</button>
-				<span>::${value}::</span>
-				<button onClick=${this.decrement}>Decrement</button>
-			</host>
-		`;
-	}
-}
+MyWc.observables = {
+	isChecked: Boolean, //html: <my-wc is-checked/>
+	value: String, //html: <my-wc value='....'/>
+	id: Number, //html: <my-wc id='10'/>
+	data: Object //html: <my-wc data='{"name":"atomico"}'/>
+};
 ```
+
+## Example
+
+### Simple shop
+
+This small example was created by using `npm init @atomico`, it is a source for learning to develop PWA applications with Atomico.
+
+[![simple shop](https://res.cloudinary.com/dz0i8dmpt/image/upload/v1557340605/github/atomico-element/simple-shop.png)](https://atomicojs.github.io/examples/atomico-store/public/)

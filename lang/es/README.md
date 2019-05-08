@@ -1,182 +1,66 @@
-# @atomico/element
+## @atomico/element
 
-[![npm](https://badgen.net/npm/v/@atomico/element)](http://npmjs.com/@atomico/element)
-[![gzip](https://badgen.net/bundlephobia/minzip/@atomico/element)](https://bundlephobia.com/result?p=@atomico/element)
+Permite unir [@atomico/core](https://github.com/atomicojs/core) a web-components de forma simple y expresiva
 
-Permite la creacion de web-components reactivos a base de JSX, gracias a [@atomico/core](https://github.com/atomicojs/core) y [@atomico/base-element](https://github.com/atomicojs/base-element).
+## ¿Que es Atomico?
 
-```jsx
-let { Element, h } = this["@atomico/element"];
+Atomico es un proyecto [personal](https://github.com/uppercod) Open Source, que posee como misión simplificar la creación de interfaces sostenibles y escalables con un mínimo impacto en los recursos del navegador.
 
-class AtomicoCounter extends Element {
-	static observables = {
-		value: Number
-	};
-	render({ value = 0 }) {
-		return (
-			<host>
-				<button onClick={() => this.value++}>Increment</button>
-				<span>::{value}::</span>
-				<button onClick={() => this.value--}>Decrement</button>
-			</host>
-		);
-	}
-}
-customElements.define("atomico-counter", AtomicoCounter);
-```
+## Desde React a web-component con Atomico
 
-## Observacion
+No olvidemos que estas bibliotecas son similares en api, pero la orientación de Atomico es fomentar el uso de web-components con o sin Atomico, ya que los web-components son agnosticos a framework o librerias.
 
-`@atomico/element`, si bien utiliza clases para la generación de web-components, el comportamiento de render es funcional, por lo que ud puede usar todos lo documentado en [@atomico/core](https://github.com/atomicojs/core), como hooks y contextos.
+![full](https://res.cloudinary.com/dz0i8dmpt/image/upload/v1557340605/github/atomico-element/full.png)
 
-## Ventajas
+### diferencias de Importación
 
-### Comportamiento funcional
+![import](https://res.cloudinary.com/dz0i8dmpt/image/upload/v1557340605/github/atomico-element/import.png)
 
-`toClass`, creara una clase a base de la función, la propiedad observable `value`, permitirá definir un estado inicial para `useState`. **Recuerde un web-component creado con atomico siempre debe retornar `<host/>`**
+ud necesitara 2 importaciones, [@atomico/element](https://github.com/atomicojs/element) este permite trabajar con web-components y [@atomico/core](https://github.com/atomicojs/core) que posee el soporte a hooks, contexto, HoCs, virtual-dom y más.
 
-```jsx
-import { toClass, h, useState } from "@atomico/element";
+### Componente a web-component
 
-function MyWc({ value }) {
-	let [state, setState] = useState(value);
-	return (
-		<host>
-			<button onClick={() => setState(state + 1)}>Increment</button>
-			<span>::{state}::</span>
-			<button onClick={() => setState(state - 1)}>Decrement</button>
-		</host>
-	);
-}
+![component](https://res.cloudinary.com/dz0i8dmpt/image/upload/v1557340605/github/atomico-element/component.png)
 
-MyWc.observables = {
-	value: Number
-};
+**Atomico permite ambas sintaxis**, por lo que ud podra usar componentes y web-components de forma conjunta, pero ahora nos centramos en la creación de web-components
 
-customElement.define("my-wc", toClass(MyWc));
-```
+### fragmento a host
 
-### Hooks
+Atomico no posee soporte a fragmentos, pero para mejorar la experiencia de desarrollo Atomico crea el tag `<host>`, este posee un efecto similar al selector de css `:host{}`
 
-Gracias a `@atomico/core` ud podra usar [hooks](https://github.com/atomicojs/core#hooks) para abstraer la lógica del web-component.
+El tag `<host>` trae mejores beneficios, ya que permite manipular propiedades y atributos del web-component desde el mismo JSX, la siguiente imagen enseña un la diferencia entre un web-component vainilla y el tag host de atomico, para comprender su beneficio y equivalencia.
 
-```jsx
-class TagCounter extends Element {
-	render() {
-		let [state, setState] = useState(0);
-		return (
-			<host>
-				<button onClick={() => setState(state - 1)}>Decrement</button>
-				<span>::{state}::</span>
-				<button onClick={() => setState(state + 1)}>Increment</button>
-			</host>
-		);
-	}
-}
-```
+![host](https://res.cloudinary.com/dz0i8dmpt/image/upload/v1557340605/github/atomico-element/host.png)
 
-### No todo debe ser un web-component
+### Render a customElement
 
-En `@atomico/element` ud puede crear componentes reutilizables fuera de la caja de web-components, permitiendo mantener el patrón de [HoCs](https://reactjs.org/docs/higher-order-components.html) virtual sin problemas al momento de componer vistas.
+![render](https://res.cloudinary.com/dz0i8dmpt/image/upload/v1557340605/github/atomico-element/render.png)
 
-```jsx
-function PrivateButton(props) {
-	return <button {...props} />;
-}
+render permite apuntar el componente hacia un nodo del documento, customElement permite asociar su función a un web-component, por lo que ud solo deberá invocar el web-component desde el HTML, React o Vue, sin preocuparse pro especificar el nodo.
 
-class PublicWebComponent extends Element {
-	render() {
-		return (
-			<host>
-				<PrivateButton>btn-1</PrivateButton>
-				<PrivateButton>btn-2</PrivateButton>
-			</host>
-		);
-	}
-}
-```
+## definición de observables
 
-### shadowDom declarativo en el JSX
+Lo anteriormente expuesto enseña lo similar, los `obserbables` son la capa de Atomico para definir propiedades y atributos del web-component, para identificar los tipos y forzarlos si provienen de un `string` Atómico hace uso de las declaraciones como `Number`, `String`, `Boolean`, `Object`, `Array`, `Function` y `Promise`, para definir los tipos de las propiedades y atributos.
 
-`@atomico/element`, el uso del shadowDom no esta sujeto a usarcé solo dentro de un web-component, puede ser aplicado a cualquier elemento html que lo soporte.
+![observables](https://res.cloudinary.com/dz0i8dmpt/image/upload/v1557340605/github/atomico-element/observables.png)
 
-```jsx
-export function Title(props) {
-	return (
-		<h1 shadowDom>
-			<style>{`
-			@import url('https://fonts.googleapis.com/css?family=Montserrat');
-			:host{font-family: 'Montserrat', sans-serif;}
-			`}</style>
-			{props.children}
-		</h1>
-	);
-}
-```
+todo atributo se define como propiedad por lo que ud podrá hacer uso de `document.querySelector("my-wc").value = "new value"` para su definición.
 
-### tag host
-
-`<host>` este tag permite apuntar directamente al web-component, logrando un código mas declarativo
-
-```jsx
-class Tag extends Element {
-	/**❌**/
-	constructor() {
-		super();
-		this.attachShadow({ mode: "open" });
-		this.style.background = "black";
-		this.addEventListener("click", () => {
-			console.log("event!");
-		});
-	}
-	/**✔️**/
-	render() {
-		return (
-			<host
-				shadowDom
-				onClick={() => console.log("event")}
-				style={{ background: "black" }}
-			/>
-		);
-	}
-}
-```
-
-## Package
-
-los bundles generados por `atomico/element`, son módulos modernos, uno para navegador que incluye todas las dependencias y uno para herramientas de bundle como [Rollup](https://rollupjs.org), que permite aplicar tree-shaking.
-
-### Browser
-
-Este formato de pkg permite soporte en navegadores modernos, ideal para el desarrollo de prototipos, ya que los navegadores no soportan JSX, `atomico/element` acopla [htm](https://github.com/developit/htm) al bundle de exportación.
-
-[**Abrir ejemplo en editor**](https://stackblitz.com/edit/atomico-element?file=index.js)
+los observables no se limitan solo a una propiedad ud puede crear conjuntos mas complejos.
 
 ```js
-import {
-	Element,
-	html
-} from "https://unpkg.com/@atomico/element/browser?module";
-
-class Counter extends Element {
-	props = { value: 0 };
-	static observables = {
-		value: Number
-	};
-	increment() {
-		this.value += 1;
-	}
-	decrement() {
-		this.value -= 1;
-	}
-	render({ value }) {
-		return html`
-			<host shadowDom>
-				<button onClick=${this.increment}>Increment</button>
-				<span>::${value}::</span>
-				<button onClick=${this.decrement}>Decrement</button>
-			</host>
-		`;
-	}
-}
+MyWc.observables = {
+	isChecked: Boolean, //html: <my-wc is-checked/>
+	value: String, //html: <my-wc value='....'/>
+	id: Number, //html: <my-wc id='10'/>
+	data: Object //html: <my-wc data='{"name":"atomico"}'/>
+};
 ```
+
+## Ejemplos
+
+### Simple shop
+
+Este pequeño ejemplo se creo mediante el uso de `npm init @atomico`, es un fuente para el aprendizaje de para el desarrollo de aplicaciones PWA con Atomico.
+
+[![simple shop](https://res.cloudinary.com/dz0i8dmpt/image/upload/v1557340605/github/simple-shop.png)](https://atomicojs.github.io/examples/atomico-store/public/)
