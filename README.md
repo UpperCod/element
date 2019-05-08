@@ -14,7 +14,7 @@ Do not forget that these libraries are similar in api, but Atomico's orientation
 
 ### Import differences
 
-![import](./import.png)
+![import](https://res.cloudinary.com/dz0i8dmpt/image/upload/v1557340605/github/atomico-element/import.png)
 
 you will need 2 imports, [@atomico/element](https://github.com/atomicojs/element) this allows you to work with web-components and [@atomico/core](https://github.com/atomicojs/core) that has support for hooks, context, HoCs, virtual-dom and more.
 
