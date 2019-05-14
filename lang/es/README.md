@@ -57,6 +57,33 @@ MyWc.observables = {
 };
 ```
 
+## Web-component como clase
+
+El comportamiento funcional es para simplificar la expresividad de un web-component, pero el api real es un clase, ud puede hacer uso de esta, el mayor beneficio de usar clases que los eventos mantienen el contexto de `this` sin la necesidad de usar `bind`
+
+```jsx
+import { h, Element } from "@atomico/element";
+
+class ShowEmoji extends Element {
+	static observables = {
+		checked: Boolean
+	};
+	toggle() {
+		this.checked = !this.checked;
+	}
+	render({ checked = false }) {
+		return (
+			<host shadowDom>
+				{checked && "😃"}
+				<button onClick={this.toggle}>toggle emoji</button>
+			</host>
+		);
+	}
+}
+```
+
+> los hooks tambien pueden ser usando dentro de render.
+
 ## Ejemplos
 
 ### Simple shop
