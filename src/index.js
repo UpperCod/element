@@ -26,16 +26,27 @@ export class Element extends BaseElement {
 		 */
 		let { styles } = this.constructor;
 		this.render = this.render.bind(this);
+		let nextProps = {};
 		/**
 		 * @param {Object<string,any>} - Properties to update the component
 		 */
 		this.update = props => {
-			this.props = { ...this.props, ...props };
+			for (let key in props) nextProps[key] = props[key];
 			if (!prevent) {
 				prevent = true;
 				this.mounted.then(() => {
+					let props = (this.props = { ...this.props });
+					for (let key in nextProps) {
+						let value = nextProps[key];
+						if (value == null) {
+							delete props[key];
+						} else {
+							props[key] = nextProps[key];
+						}
+					}
+					nextProps = {};
 					prevent = false;
-					render(h(this.render, this.props), this, options);
+					render(h(this.render, props), this, options);
 					if (styles && this.shadowRoot) {
 						this.shadowRoot.adoptedStyleSheets = styles;
 						styles = null;
