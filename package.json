@@ -1,7 +1,7 @@
 {
 	"name": "@atomico/element",
 	"description": "It allows the creation of reactive web-components based on JSX with @atomico/core",
-	"version": "0.6.4",
+	"version": "0.6.5",
 	"main": "module.js",
 	"module": "module.js",
 	"unpkg": "browser.js",
@@ -22,13 +22,14 @@
 		"prepare": "npm run build && npm run test"
 	},
 	"peerDependencies": {
-		"@atomico/core": "^1.4.0"
+		"@atomico/core": "^1.5.0"
 	},
 	"dependencies": {
 		"@atomico/base-element": "^0.2.0",
 		"htm": "^2.1.1"
 	},
 	"devDependencies": {
+		"@atomico/core": "^1.5.1",
 		"jasmine-core": "^3.4.0",
 		"karma": "^4.1.0",
 		"karma-chrome-launcher": "^2.2.0",

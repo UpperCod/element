@@ -5,8 +5,6 @@ export { h } from "@atomico/core";
 
 let cache = {};
 
-let ID = 0;
-
 export class Element extends BaseElement {
 	constructor() {
 		super();
@@ -19,7 +17,7 @@ export class Element extends BaseElement {
 		 * @property {boolean} host - allows to enable control over the main container, in this case the customElement
 		 */
 		let options = {
-			id: "@wc." + ID++,
+			id: Symbol("state"),
 			bind: this,
 			host: true
 		};
