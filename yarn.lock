@@ -2,10 +2,10 @@
 # yarn lockfile v1
 
 
-"@atomico/base-element@^0.2.0":
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/@atomico/base-element/-/base-element-0.2.0.tgz#84de1a3461f685de42da73c4c71b1b561418e9eb"
-  integrity sha512-e+lglKi24O6GtYKUYThceuQplAuQQYOB4r/t43qNgK5z1dAF9dV8lE0JTm8x0nrSdnP4eIwfl3ajAAswPl8cZA==
+"@atomico/base-element@^0.2.1":
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/@atomico/base-element/-/base-element-0.2.1.tgz#f7944d2757e8fa72b197b4dd4bc0a7837465cb93"
+  integrity sha512-3VUWGKx9c3Q41dajjuw9rA51jYy3/nYbaS14LX273ACm4z8hHtYubkXpRyGvF/eP4BGUS69AiX+sg3/30SX8/A==
 
 "@atomico/core@^1.5.1":
   version "1.5.1"
